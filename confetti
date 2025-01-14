@@ -1,0 +1,283 @@
+//cobfetti
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1a1a1a, #2d3436);
+      cursor: pointer;
+    }
+
+    .confetti {
+      position: absolute;
+      border-radius: 50%;
+      animation: confettiFloat var(--duration, 3s) ease-in-out forwards;
+      filter: blur(1px);
+      mix-blend-mode: screen;
+    }
+
+    .particle {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: radial-gradient(circle at 30% 30%, var(--color, #fbbf24), transparent);
+      border-radius: 50%;
+      animation: particleFloat var(--duration, 10s) linear infinite;
+      filter: blur(1px) brightness(1.2);
+      mix-blend-mode: screen;
+    }
+
+    .sparkle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: white;
+      border-radius: 50%;
+      animation: sparkleFloat var(--duration, 2s) ease-out infinite;
+      filter: blur(0.5px);
+      mix-blend-mode: screen;
+    }
+
+    .trail {
+      position: absolute;
+      pointer-events: none;
+      animation: trailFade 1s ease-out forwards;
+    }
+
+    @keyframes confettiFloat {
+      0% {
+        transform: scale(0.5) translate(0, 0) rotate(0deg);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.5) translate(var(--tx-mid), var(--ty-mid)) rotate(var(--rotation));
+        opacity: 0.8;
+      }
+      100% {
+        transform: scale(0.5) translate(var(--tx-end), var(--ty-end)) rotate(calc(var(--rotation) * 2));
+        opacity: 0;
+      }
+    }
+
+    @keyframes particleFloat {
+      0% {
+        transform: scale(0) translate(0, 0);
+        opacity: 0.1;
+      }
+      10% {
+        transform: scale(1) translate(var(--tx-small), -100px);
+        opacity: 1;
+      }
+      90% {
+        transform: scale(0.8) translate(calc(var(--tx-small) * -1), -400px);
+        opacity: 0.8;
+      }
+      100% {
+        transform: scale(0) translate(0, -500px);
+        opacity: 0;
+      }
+    }
+
+    @keyframes sparkleFloat {
+      0% {
+        transform: scale(0) translate(0, 0);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1) translate(var(--tx), var(--ty));
+        opacity: 0;
+      }
+    }
+
+    @keyframes trailFade {
+      0% {
+        transform: scale(1);
+        opacity: 0.8;
+      }
+      100% {
+        transform: scale(2);
+        opacity: 0;
+      }
+    }
+
+    .message {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 24px;
+      text-align: center;
+      opacity: 0.8;
+      pointer-events: none;
+      text-shadow: 0 0 10px rgba(255,255,255,0.5);
+    }
+  </style>
+</head>
+<body>
+  <div class="message">Click or move mouse for effects!</div>
+  <script>
+    const CANDY_COLORS = [
+      '#ff6b6b',
+      '#4ecdc4',
+      '#45b7d1',
+      '#96ceb4',
+      '#ffbe0b',
+      '#ff9ff3',
+      '#ffd32a',
+      '#0be881'
+    ];
+
+    let mouseX = 0;
+    let mouseY = 0;
+    let isClicking = false;
+    let clickTimeout;
+
+    function getRandomColor() {
+      return CANDY_COLORS[Math.floor(Math.random() * CANDY_COLORS.length)];
+    }
+
+    function createConfetti(x, y, burst = false) {
+      const confetti = document.createElement('div');
+      const color = getRandomColor();
+      const size = Math.random() * 30 + 10;
+      const duration = Math.random() * 2 + 2;
+      
+      confetti.className = 'confetti';
+      confetti.style.width = size + 'px';
+      confetti.style.height = size + 'px';
+      confetti.style.background = `radial-gradient(circle, ${color}, ${color}00)`;
+      confetti.style.setProperty('--duration', duration + 's');
+      
+      const angle = burst ? Math.random() * Math.PI * 2 : Math.PI * 1.5 + (Math.random() - 0.5);
+      const velocity = burst ? Math.random() * 200 + 200 : Math.random() * 100 + 100;
+      const tx = Math.cos(angle) * velocity;
+      const ty = Math.sin(angle) * velocity;
+
+      confetti.style.setProperty('--tx-mid', tx * 0.5 + 'px');
+      confetti.style.setProperty('--ty-mid', ty * 0.5 + 'px');
+      confetti.style.setProperty('--tx-end', tx + 'px');
+      confetti.style.setProperty('--ty-end', ty + 'px');
+      confetti.style.setProperty('--rotation', Math.random() * 720 - 360 + 'deg');
+      
+      confetti.style.left = x + 'px';
+      confetti.style.top = y + 'px';
+      
+      document.body.appendChild(confetti);
+      
+      confetti.addEventListener('animationend', () => confetti.remove());
+    }
+
+    function createParticle() {
+      const particle = document.createElement('div');
+      const color = getRandomColor();
+      const duration = Math.random() * 5 + 8;
+      
+      particle.className = 'particle';
+      particle.style.setProperty('--color', color);
+      particle.style.setProperty('--duration', duration + 's');
+      particle.style.setProperty('--tx-small', (Math.random() * 200 - 100) + 'px');
+      
+      particle.style.left = Math.random() * window.innerWidth + 'px';
+      particle.style.top = window.innerHeight + 20 + 'px';
+      
+      document.body.appendChild(particle);
+      
+      particle.addEventListener('animationend', () => {
+        particle.remove();
+        createParticle();
+      });
+    }
+
+    function createSparkle(x, y) {
+      const sparkle = document.createElement('div');
+      sparkle.className = 'sparkle';
+      sparkle.style.left = x + 'px';
+      sparkle.style.top = y + 'px';
+      
+      const angle = Math.random() * Math.PI * 2;
+      const distance = Math.random() * 100 + 50;
+      sparkle.style.setProperty('--tx', Math.cos(angle) * distance + 'px');
+      sparkle.style.setProperty('--ty', Math.sin(angle) * distance + 'px');
+      sparkle.style.setProperty('--duration', Math.random() + 1 + 's');
+      
+      document.body.appendChild(sparkle);
+      sparkle.addEventListener('animationend', () => sparkle.remove());
+    }
+
+    function createTrail(x, y) {
+      const trail = document.createElement('div');
+      trail.className = 'trail';
+      trail.style.left = x + 'px';
+      trail.style.top = y + 'px';
+      trail.style.width = '10px';
+      trail.style.height = '10px';
+      trail.style.background = `radial-gradient(circle, ${getRandomColor()}, transparent)`;
+      trail.style.borderRadius = '50%';
+      
+      document.body.appendChild(trail);
+      trail.addEventListener('animationend', () => trail.remove());
+    }
+
+    // Initialize particles
+    for (let i = 0; i < 30; i++) {
+      setTimeout(createParticle, Math.random() * 5000);
+    }
+
+    // Mouse move effects
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      
+      if (Math.random() < 0.2) {
+        createTrail(mouseX, mouseY);
+      }
+      
+      if (isClicking) {
+        createConfetti(mouseX, mouseY);
+        if (Math.random() < 0.3) {
+          createSparkle(mouseX, mouseY);
+        }
+      }
+    });
+
+    // Click effects
+    document.addEventListener('mousedown', (e) => {
+      isClicking = true;
+      for (let i = 0; i < 20; i++) {
+        setTimeout(() => {
+          createConfetti(e.clientX, e.clientY, true);
+          createSparkle(e.clientX, e.clientY);
+        }, i * 50);
+      }
+    });
+
+    document.addEventListener('mouseup', () => {
+      isClicking = false;
+    });
+
+    // Automatic effects
+    setInterval(() => {
+      if (Math.random() < 0.3) {
+        createConfetti(
+          Math.random() * window.innerWidth,
+          Math.random() * window.innerHeight
+        );
+      }
+    }, 500);
+
+    // Remove message after 3 seconds
+    setTimeout(() => {
+      const message = document.querySelector('.message');
+      message.style.opacity = '0';
+      message.style.transition = 'opacity 1s';
+    }, 3000);
+  </script>
+</body>
+</html>
