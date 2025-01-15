@@ -1,0 +1,254 @@
+import React from "react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { ProfileCard } from "@/components/ProfileCard";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+interface Profile {
+  id: string;
+  name: string;
+  age: number;
+  bio: string;
+  interests: string[];
+  imageUrl: string;
+  status: "Available" | "On Date" | "Offline";
+}
+interface ProfileGridProps {
+  profiles: Profile[];
+  onBid: (profileId: string) => void;
+}
+export const ProfileGrid = ({ profiles, onBid }: ProfileGridProps) => {
+  const [page, setPage] = React.useState(1);
+  const profilesPerPage = 6;
+  const totalPages = Math.ceil(profiles.length / profilesPerPage);
+  const startIndex = (page - 1) * profilesPerPage;
+  const displayedProfiles = profiles.slice(startIndex, startIndex + profilesPerPage);
+  return (
+    <div className="w-full max-w-7xl mx-auto px-4 py-8">
+      <Carousel
+        opts={{
+          align: "start",
+          loop: true,
+        }}
+        className="w-full"
+      >
+        <CarouselContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {displayedProfiles.map((profile) => (
+            <CarouselItem key={profile.id} className="basis-full md:basis-1/2 lg:basis-1/3">
+              <ProfileCard
+                name={profile.name}
+                age={profile.age}
+                bio={profile.bio}
+                interests={profile.interests}
+                imageUrl={profile.imageUrl}
+                status={profile.status}
+                onBid={() => onBid(profile.id)}
+              />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <div className="flex justify-center mt-8 gap-4">
+          <CarouselPrevious />
+          <CarouselNext />
+        </div>
+      </Carousel>
+      <div className="mt-8">
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+              />
+            </PaginationItem>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+              <PaginationItem key={pageNum}>
+                <PaginationLink
+                  onClick={() => setPage(pageNum)}
+                  isActive={pageNum === page}
+                >
+                  {pageNum}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
+    </div>
+  );
+};
+src/pages/MainView.tsx
+import 
+{
+ 
+Users } 
+from "
+lucide-
+react";
+import 
+React
+ 
+from "
+react";
+import { 
+useNavigate
+ } from "
+react-router-dom
+";
+import { 
+ProfileGrid
+ } from "
+@/components/ProfileGrid
+";
+const MainView = () => {
+const MainView = () => {
+  const 
+navigate
+ = 
+useNavigate();
+  const 
+profiles
+ = 
+[
+    // Example profiles, replace with actual data
+    
+const userGroups = [
+    
+{
+      
+{ 
+id: 
+1
+, count: 3, area: 
+"
+Downtown" }
+,
+      
+id: 
+"
+1
+"
+,
+      
+{ id
+: 
+2,
+ 
+count: 5, area: 
+"
+Uptown" }
+,
+      
+name
+: 
+"John
+ 
+Doe
+"
+,
+      
+{ id
+: 
+3
+,
+ count: 4, area: "Midtown" },
+      
+age
+: 
+28
+,
+      bio: "Loves hiking and outdoor adventures.",
+      interests: ["Hiking", "Traveling", "Photography"],
+      imageUrl: "https://example.com/john.jpg",
+      status: "Available",
+    },
+    {
+      id: "2",
+      name: "Jane Smith",
+      age: 25,
+      bio: "Avid reader and coffee enthusiast.",
+      interests: ["Reading", "Coffee", "Yoga"],
+      imageUrl: "https://example.com/jane.jpg",
+      status: "On Date",
+    },
+    // Add more profiles as needed
+  ];
+  ];
+  const handleBid = (profileId: string) => {
+    console.log(`Bid placed for profile ID: ${profileId}`);
+  };
+  return (
+  return (
+    <div className="
+min-h-screen
+ 
+bg
+-
+gradient-to-b from-purple-50 to-pink-50 py-12 px-4
+">
+    <div className="
+container
+ 
+mx
+-
+auto
+">
+      <
+div
+ 
+className
+=
+"max-w-4xl
+ 
+mx-auto">
+      <
+ProfileGrid
+ 
+profiles
+=
+{profiles}
+ 
+onBid={handleBid} />
+        <h1 className="text-4xl font-bold text-center mb-12 text-primary">DateBid</h1>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {userGroups.map((group) => (
+            <div
+              key={group.id}
+              onClick={() => navigate("/dating")}
+              className="flex flex-col items-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer animate-fade-in"
+            >
+              <Users 
+                className="w-20 h-20 text-primary mb-4 hover:scale-110 transition-transform" 
+                onClick={() => navigate("/dating")}
+              />
+              <h2 className="text-xl font-semibold mb-2">{group.area}</h2>
+              <p className="text-gray-600">{group.count} Active Users</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+    </div>
+  );
+  );
+};
+};
+export default MainView;
