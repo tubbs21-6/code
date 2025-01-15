@@ -1,0 +1,83 @@
+BASIC REACT SCRIPT
+
+react script
+(index.js)
+import React from "react";
+import ReactDOM from "react-dom";
+import App from "./App.js";
+ReactDOM.render(<App />, document.getElementById("root"));
+
+(index.html)
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>React</title>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script src="bundle.js"></script>
+</body>
+
+</html>
+
+(app.js)
+import React, { Component} from "react";
+
+class App extends Component{
+  render(){
+    return(
+      <div>
+        <b>Hello world</b>
+      </div>
+    );
+  }
+}
+
+export default (App);
+
+(package.json)
+{
+  "name": "my-react-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack-dev-server --open --mode development",
+    "build": "webpack --mode production"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.7.2",
+    "@babel/preset-env": "^7.7.1",
+    "@babel/preset-react": "^7.7.0",
+    "babel-loader": "^8.0.6",
+    "copy-webpack-plugin": "^5.0.5",
+    "css-loader": "^3.2.0",
+    "style-loader": "^1.0.0",
+    "webpack": "^4.41.1",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.9.0"
+  },
+  "dependencies": {
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0"
+  }
+}
+
+(webpack.config.js)
+
+
+react-template-from-scratch-2020
+Minimal React template
+
+npm install
+
+npm start
+Part of this guide:
+
+https://medium.com/@matteofumagalli1275/setting-up-nw-js-react-materialui-from-scratch-5a83c3f58355?source=friends_link&sk=e1438ea6809aa07e5905e37af6f7b866
